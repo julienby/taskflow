@@ -281,6 +281,7 @@ function renderTaskRow(array $todo): string {
     }
 
     $priorityLabel = ucfirst($todo['priority']);
+    $jsTitle = htmlspecialchars(addslashes($todo['title']), ENT_QUOTES, 'UTF-8');
 
     return <<<HTML
     <div id="todo-{$id}" class="todo-row group flex items-center gap-3 px-4 py-3 border-l-4 {$border}
@@ -318,14 +319,12 @@ function renderTaskRow(array $todo): string {
             <div class="flex items-center gap-2 flex-wrap">
                 <span class="{$titleClass} text-sm font-medium truncate">{$todo['title']}</span>
                 <span class="{$catColor} text-xs px-2 py-0.5 rounded-full font-medium">{$catLabel}</span>
+                {$dueDateHtml}
             </div>
         </div>
 
-        <!-- Due date -->
-        {$dueDateHtml}
-
-        <!-- Actions (hover on desktop, always on mobile) -->
-        <div class="flex items-center gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <!-- Actions -->
+        <div class="flex items-center gap-1">
             <button hx-get="api.php?action=edit_form&id={$id}"
                     hx-target="#todo-{$id}"
                     hx-swap="outerHTML"
@@ -337,10 +336,7 @@ function renderTaskRow(array $todo): string {
                           d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                 </svg>
             </button>
-            <button hx-delete="api.php?action=delete&id={$id}"
-                    hx-target="#todo-{$id}"
-                    hx-swap="outerHTML swap:300ms"
-                    hx-confirm="Delete this task?"
+            <button onclick="openDeleteModal({$id}, '{$jsTitle}')"
                     class="p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50
                            dark:hover:text-red-400 dark:hover:bg-red-900/30 transition-colors"
                     title="Delete">
